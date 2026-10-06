@@ -1990,3 +1990,929 @@ button,[role="button"],a{-webkit-tap-highlight-color:transparent;}
 html.ios-maximized,html.ios-maximized body{position:fixed;inset:0;width:100%;height:100%;height:100dvh;margin:0;overflow:hidden;overscroll-behavior:none;background:#171b17;}
 html.ios-maximized body{padding-top:env(safe-area-inset-top);padding-right:env(safe-area-inset-right);padding-bottom:env(safe-area-inset-bottom);padding-left:env(safe-area-inset-left);box-sizing:border-box;}
 html.ios-maximized #gameRoot{width:100%;height:100%;}
+/* =========================================================
+   v1.5.x 战役系统全页面界面
+   Campaign / Briefing / Force Selection Full Page UI
+
+   作用范围：
+   - 战场选择
+   - 战役选择
+   - 子战役 / 阶段选择
+   - 战役前导简报
+   - 砺剑27 A/B 简报
+   - 合成旅选择
+   - 集团军编组
+   - 海军陆战队支援选择
+   - 难度 / 最终战役确认
+
+   不影响实际六角格战场 UI
+   ========================================================= */
+
+
+/* ---------- 1. 战役系统最外层 ---------- */
+
+#campaign-selection {
+    position: fixed !important;
+    inset: 0 !important;
+
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+
+    max-width: none !important;
+    max-height: none !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    box-sizing: border-box !important;
+
+    display: flex !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+
+    overflow: hidden !important;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(24, 28, 23, 0.98),
+            rgba(31, 34, 28, 0.98)
+        ) !important;
+
+    font-family:
+        FangSong,
+        STFangsong,
+        SimSun,
+        serif !important;
+
+    z-index: 100000 !important;
+
+    overscroll-behavior: contain;
+}
+
+
+/* ---------- 2. 覆盖 CampaignSelection.shell() 内联的980px窗口 ---------- */
+
+/*
+   shell() 创建的第一个 div 就是原来的米黄色弹窗。
+   必须使用 !important 才能覆盖 JS 中的 inline style。
+*/
+
+#campaign-selection > div {
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+
+    max-width: none !important;
+    max-height: none !important;
+
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    margin: 0 !important;
+
+    padding:
+        max(28px, env(safe-area-inset-top))
+        max(42px, env(safe-area-inset-right))
+        max(28px, env(safe-area-inset-bottom))
+        max(42px, env(safe-area-inset-left)) !important;
+
+    box-sizing: border-box !important;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ded7ba 0%,
+            #d6cfb2 48%,
+            #cec6a8 100%
+        ) !important;
+
+    color: #24251f !important;
+
+    border: 0 !important;
+
+    outline: none !important;
+
+    box-shadow:
+        inset 0 0 0 1px #5a5646,
+        inset 0 0 0 9px rgba(198, 185, 139, 0.48),
+        inset 0 0 60px rgba(61, 58, 47, 0.10) !important;
+}
+
+
+/* ---------- 3. 页面标题 ---------- */
+
+#campaign-selection > div > h1 {
+    margin:
+        4px
+        auto
+        0 !important;
+
+    padding: 0 72px !important;
+
+    text-align: center !important;
+
+    font-size:
+        clamp(30px, 2.7vw, 48px) !important;
+
+    line-height: 1.25 !important;
+
+    letter-spacing: 0.14em !important;
+
+    color: #24251f !important;
+
+    -webkit-text-fill-color: #24251f !important;
+}
+
+
+/* shell() 标题下面的副标题 */
+
+#campaign-selection > div > h1 + div {
+    margin:
+        10px
+        auto
+        28px !important;
+
+    padding-bottom: 18px !important;
+
+    max-width: 1500px !important;
+
+    text-align: center !important;
+
+    font-size:
+        clamp(14px, 1.05vw, 18px) !important;
+
+    color: #666253 !important;
+
+    border-bottom:
+        1px solid rgba(90, 86, 70, 0.40) !important;
+}
+
+
+/* ---------- 4. 页面主体宽度 ---------- */
+
+/*
+   原来的内容全部挤在980px窗口。
+   全页面以后允许内容扩展到约1700px。
+*/
+
+#campaign-selection > div > div:not(:last-child) {
+    max-width: 1700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+/* ---------- 5. 战场 / 战役卡片 ---------- */
+
+#campaign-selection button[data-theater],
+#campaign-selection button[data-phase],
+#campaign-selection button[data-scenario] {
+    min-height: 150px !important;
+
+    padding: 24px 28px !important;
+
+    border:
+        1px solid #696553 !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            #cbc4a7,
+            #c1ba9d
+        ) !important;
+
+    color: #24251f !important;
+
+    -webkit-text-fill-color: #24251f !important;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.22),
+        0 3px 10px rgba(35,34,28,.12) !important;
+
+    cursor: pointer !important;
+
+    transition:
+        transform .14s ease,
+        box-shadow .14s ease,
+        filter .14s ease !important;
+}
+
+
+#campaign-selection button[data-theater]:hover,
+#campaign-selection button[data-phase]:hover,
+#campaign-selection button[data-scenario]:hover {
+    transform: translateY(-2px);
+
+    filter: brightness(1.035);
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.32),
+        0 8px 20px rgba(35,34,28,.20) !important;
+}
+
+
+#campaign-selection button[data-theater] strong,
+#campaign-selection button[data-phase] strong,
+#campaign-selection button[data-scenario] strong {
+    font-size:
+        clamp(22px, 1.7vw, 30px) !important;
+
+    line-height: 1.25 !important;
+}
+
+
+/* ---------- 6. 所有普通按钮统一放大 ---------- */
+
+#campaign-selection button {
+    min-height: 42px;
+
+    border:
+        1px solid #696553;
+
+    background:
+        linear-gradient(
+            180deg,
+            #eee9d5,
+            #d7d0b4
+        );
+
+    color: #24251f !important;
+
+    -webkit-text-fill-color: #24251f !important;
+
+    font-family:
+        FangSong,
+        STFangsong,
+        SimSun,
+        serif !important;
+
+    cursor: pointer;
+
+    touch-action: manipulation;
+}
+
+
+#campaign-selection button:hover:not(:disabled) {
+    filter: brightness(1.06);
+}
+
+
+#campaign-selection button:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+
+#campaign-selection button:disabled {
+    opacity: .50;
+    cursor: not-allowed;
+}
+
+
+/* ---------- 7. 返回按钮区域 ---------- */
+
+/*
+   shell()最后一个div就是：
+   返回上一级 / 返回主界面 / 返回当前战役
+*/
+
+#campaign-selection > div > div:last-child {
+    position: sticky;
+
+    bottom:
+        max(0px, env(safe-area-inset-bottom));
+
+    z-index: 50;
+
+    display: flex !important;
+
+    gap: 10px !important;
+
+    flex-wrap: wrap !important;
+
+    max-width: 1700px !important;
+
+    margin:
+        24px
+        auto
+        0 !important;
+
+    padding:
+        12px
+        0
+        4px !important;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(214,207,178,0),
+            rgba(214,207,178,.94) 24%,
+            rgba(214,207,178,.98)
+        );
+}
+
+
+#campaign-back,
+#campaign-main,
+#campaign-battle {
+    min-width: 150px;
+
+    padding:
+        10px
+        20px !important;
+
+    font-size: 15px !important;
+}
+
+
+/* =========================================================
+   8. 战役简报 / preBattleBriefing
+   ========================================================= */
+
+
+/*
+   renderScenarioPrelude() 的最外层内容块。
+   JS内联padding仍然保留，但全屏后扩宽。
+*/
+
+#campaign-selection #prelude-confirm {
+    min-width: 260px !important;
+
+    min-height: 50px !important;
+
+    margin:
+        28px
+        auto
+        10px !important;
+
+    padding:
+        12px
+        34px !important;
+
+    font-size:
+        18px !important;
+
+    font-weight: 700 !important;
+}
+
+
+/* 简报里的沙盘区域在全屏情况下允许明显增高 */
+
+#campaign-selection
+#prelude-confirm
+~ * {
+    box-sizing: border-box;
+}
+
+
+/*
+   renderScenarioPrelude没有独立class，
+   所以这里针对其主要内容块。
+*/
+
+#campaign-selection > div > div[style*="line-height:1.65"] {
+    max-width: 1700px !important;
+
+    margin:
+        0
+        auto !important;
+
+    padding:
+        clamp(18px, 1.8vw, 30px) !important;
+}
+
+
+/* 简报第一层左右分栏 */
+
+#campaign-selection
+> div
+> div[style*="line-height:1.65"]
+> div:first-child {
+    gap:
+        clamp(18px, 2vw, 34px) !important;
+
+    grid-template-columns:
+        minmax(0, 1.55fr)
+        minmax(360px, .75fr) !important;
+}
+
+
+/* 左侧沙盘 */
+
+#campaign-selection
+> div
+> div[style*="line-height:1.65"]
+> div:first-child
+> div:first-child
+> div:first-child {
+    height:
+        clamp(430px, 53vh, 720px) !important;
+
+    min-height: 430px !important;
+}
+
+
+/* 右侧导演部通告 */
+
+#campaign-selection
+> div
+> div[style*="line-height:1.65"]
+> div:first-child
+> div:nth-child(2) {
+    padding:
+        clamp(18px, 1.6vw, 28px) !important;
+
+    font-size:
+        clamp(14px, .95vw, 17px) !important;
+
+    line-height: 1.85 !important;
+
+    overflow: auto;
+}
+
+
+/* 下方演习阶段 + 判定 */
+
+#campaign-selection
+> div
+> div[style*="line-height:1.65"]
+> div:nth-child(2) {
+    gap:
+        clamp(18px, 2vw, 32px) !important;
+
+    margin-top:
+        clamp(18px, 2vw, 30px) !important;
+}
+
+
+/* =========================================================
+   9. 编制 / 支援选择
+   ========================================================= */
+
+
+/*
+   集团军、现代旅、海军陆战队支援选择的内容区域
+*/
+
+#campaign-selection
+select,
+#campaign-selection input {
+    font-family:
+        FangSong,
+        STFangsong,
+        SimSun,
+        serif;
+}
+
+
+#campaign-selection select {
+    min-height: 42px;
+
+    padding:
+        8px
+        10px !important;
+
+    border:
+        1px solid #77715d;
+
+    background: #eee9d5;
+
+    color: #24251f;
+
+    font-size: 15px;
+}
+
+
+#campaign-selection input[type="number"] {
+    min-height: 34px;
+
+    border:
+        1px solid #77715d;
+
+    background: #eee9d5;
+
+    color: #24251f;
+}
+
+
+#campaign-selection input[type="checkbox"],
+#campaign-selection input[type="radio"] {
+    width: 17px;
+    height: 17px;
+
+    vertical-align: middle;
+}
+
+
+/* 编制页面中的大内容框 */
+
+#campaign-selection > div > div[style*="line-height:1.7"] {
+    width: 100% !important;
+
+    max-width: 1600px !important;
+
+    margin:
+        0
+        auto !important;
+
+    padding:
+        clamp(22px, 2vw, 34px) !important;
+
+    box-sizing: border-box !important;
+}
+
+
+/* =========================================================
+   10. 难度选择
+   ========================================================= */
+
+#campaign-selection .campaign-difficulty {
+    gap:
+        12px !important;
+}
+
+
+#campaign-selection .campaign-difficulty label {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    min-height: 42px;
+
+    padding:
+        8px
+        12px;
+
+    border:
+        1px solid rgba(105,101,83,.38);
+
+    background:
+        rgba(255,255,255,.10);
+}
+
+
+/* =========================================================
+   11. 滚动条
+   ========================================================= */
+
+#campaign-selection > div {
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        #77715d
+        rgba(105,101,83,.10);
+}
+
+
+#campaign-selection > div::-webkit-scrollbar {
+    width: 10px;
+}
+
+
+#campaign-selection > div::-webkit-scrollbar-track {
+    background:
+        rgba(105,101,83,.10);
+}
+
+
+#campaign-selection > div::-webkit-scrollbar-thumb {
+    background:
+        #77715d;
+
+    border:
+        2px solid #d6cfb2;
+
+    border-radius: 8px;
+}
+
+
+/* =========================================================
+   12. 桌面超宽屏
+   ========================================================= */
+
+@media (min-width: 1600px) {
+
+    #campaign-selection > div {
+        padding-left:
+            max(64px, env(safe-area-inset-left)) !important;
+
+        padding-right:
+            max(64px, env(safe-area-inset-right)) !important;
+    }
+
+
+    #campaign-selection > div > h1 {
+        font-size: 46px !important;
+    }
+
+
+    #campaign-selection button[data-theater],
+    #campaign-selection button[data-phase],
+    #campaign-selection button[data-scenario] {
+        min-height: 170px !important;
+    }
+
+}
+
+
+/* =========================================================
+   13. 1366 / 小型桌面 / iPad横屏
+   ========================================================= */
+
+@media (max-width: 1366px) {
+
+    #campaign-selection > div {
+        padding:
+            max(20px, env(safe-area-inset-top))
+            max(24px, env(safe-area-inset-right))
+            max(20px, env(safe-area-inset-bottom))
+            max(24px, env(safe-area-inset-left)) !important;
+    }
+
+
+    #campaign-selection > div > h1 {
+        font-size:
+            clamp(28px, 3vw, 38px) !important;
+    }
+
+
+    #campaign-selection
+    > div
+    > div[style*="line-height:1.65"]
+    > div:first-child {
+        grid-template-columns:
+            minmax(0, 1.35fr)
+            minmax(310px, .75fr) !important;
+    }
+
+
+    #campaign-selection
+    > div
+    > div[style*="line-height:1.65"]
+    > div:first-child
+    > div:first-child
+    > div:first-child {
+        height:
+            clamp(380px, 48vh, 560px) !important;
+
+        min-height: 380px !important;
+    }
+
+}
+
+
+/* =========================================================
+   14. iPad竖屏 / 窄窗口
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    #campaign-selection {
+        overflow: hidden !important;
+    }
+
+
+    #campaign-selection > div {
+        padding:
+            max(18px, env(safe-area-inset-top))
+            max(16px, env(safe-area-inset-right))
+            max(18px, env(safe-area-inset-bottom))
+            max(16px, env(safe-area-inset-left)) !important;
+    }
+
+
+    #campaign-selection > div > h1 {
+        padding:
+            0
+            10px !important;
+
+        font-size:
+            clamp(25px, 6vw, 34px) !important;
+    }
+
+
+    #campaign-selection > div > h1 + div {
+        margin-bottom:
+            18px !important;
+    }
+
+
+    /*
+       简报左右分栏自动变上下结构
+    */
+
+    #campaign-selection
+    > div
+    > div[style*="line-height:1.65"]
+    > div:first-child {
+        display: grid !important;
+
+        grid-template-columns:
+            1fr !important;
+    }
+
+
+    #campaign-selection
+    > div
+    > div[style*="line-height:1.65"]
+    > div:first-child
+    > div:first-child
+    > div:first-child {
+        height:
+            clamp(330px, 46vh, 500px) !important;
+
+        min-height: 330px !important;
+    }
+
+
+    /*
+       阶段 / 判定也上下排列
+    */
+
+    #campaign-selection
+    > div
+    > div[style*="line-height:1.65"]
+    > div:nth-child(2) {
+        grid-template-columns:
+            1fr !important;
+    }
+
+
+    /*
+       编制选择页面双列改一列
+    */
+
+    #campaign-selection
+    > div
+    > div[style*="line-height:1.7"]
+    > div[style*="grid-template-columns:1fr 1fr"] {
+        grid-template-columns:
+            1fr !important;
+    }
+
+
+    #campaign-selection .campaign-difficulty {
+        grid-template-columns:
+            repeat(2, 1fr) !important;
+    }
+
+
+    #campaign-back,
+    #campaign-main,
+    #campaign-battle {
+        flex:
+            1
+            1
+            140px;
+    }
+
+}
+
+
+/* =========================================================
+   15. 手机 / 极窄窗口
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    #campaign-selection > div {
+        padding:
+            max(14px, env(safe-area-inset-top))
+            max(10px, env(safe-area-inset-right))
+            max(14px, env(safe-area-inset-bottom))
+            max(10px, env(safe-area-inset-left)) !important;
+    }
+
+
+    #campaign-selection > div > h1 {
+        font-size:
+            26px !important;
+
+        letter-spacing:
+            .08em !important;
+    }
+
+
+    #campaign-selection button[data-theater],
+    #campaign-selection button[data-phase],
+    #campaign-selection button[data-scenario] {
+        min-height:
+            120px !important;
+
+        padding:
+            18px !important;
+    }
+
+
+    #campaign-selection .campaign-difficulty {
+        grid-template-columns:
+            1fr !important;
+    }
+
+
+    #campaign-selection
+    > div
+    > div[style*="line-height:1.65"]
+    > div:first-child
+    > div:first-child
+    > div:first-child {
+        height:
+            320px !important;
+
+        min-height:
+            320px !important;
+    }
+
+
+    #campaign-selection > div > div:last-child {
+        gap:
+            6px !important;
+    }
+
+
+    #campaign-back,
+    #campaign-main,
+    #campaign-battle {
+        width:
+            100% !important;
+
+        flex:
+            1
+            1
+            100% !important;
+    }
+
+}
+
+
+/* =========================================================
+   16. iOS / Safari安全区
+   ========================================================= */
+
+@supports (padding: max(0px)) {
+
+    #campaign-selection > div {
+        padding-top:
+            max(24px, env(safe-area-inset-top)) !important;
+
+        padding-right:
+            max(32px, env(safe-area-inset-right)) !important;
+
+        padding-bottom:
+            max(24px, env(safe-area-inset-bottom)) !important;
+
+        padding-left:
+            max(32px, env(safe-area-inset-left)) !important;
+    }
+
+}
+
+
+/* iPad / iPhone 独立网页模式 */
+
+html.ios-maximized #campaign-selection {
+    width:
+        100% !important;
+
+    height:
+        100% !important;
+
+    height:
+        100dvh !important;
+}
+
+
+/* =========================================================
+   17. 浏览器真正Fullscreen模式
+   ========================================================= */
+
+:fullscreen #campaign-selection,
+:-webkit-full-screen #campaign-selection {
+    width:
+        100vw !important;
+
+    height:
+        100vh !important;
+
+    height:
+        100dvh !important;
+}
+
+
+:fullscreen #campaign-selection > div,
+:-webkit-full-screen #campaign-selection > div {
+    width:
+        100vw !important;
+
+    height:
+        100vh !important;
+
+    height:
+        100dvh !important;
+}
